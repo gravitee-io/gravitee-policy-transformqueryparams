@@ -23,7 +23,8 @@ import io.gravitee.policy.api.annotations.OnRequest;
 import io.gravitee.policy.transformqueryparams.configuration.TransformQueryParametersPolicyConfiguration;
 
 /**
- * @author David BRASSELY (brasseld at gmail.com)
+ * @author David BRASSELY (david.brassely at graviteesource.com)
+ * @author GraviteeSource Team
  */
 public class TransformQueryParametersPolicy {
 
@@ -38,18 +39,9 @@ public class TransformQueryParametersPolicy {
 
     @OnRequest
     public void onRequest(Request request, Response response, ExecutionContext executionContext, PolicyChain policyChain) {
+        // Clear all parameters
         if (transformQueryParametersPolicyConfiguration.isClearAll()) {
             request.parameters().clear();
-        } else {
-            // Remove query parameters
-            if (transformQueryParametersPolicyConfiguration.getRemoveQueryParameters() != null) {
-                transformQueryParametersPolicyConfiguration.getRemoveQueryParameters()
-                        .forEach(queryParameterName -> {
-                            if (queryParameterName != null && ! queryParameterName.trim().isEmpty()) {
-                                request.parameters().remove(queryParameterName);
-                            }
-                        });
-            }
         }
 
         // Add or update query parameters
@@ -66,6 +58,17 @@ public class TransformQueryParametersPolicy {
                                     // Do nothing
                                 }
                             }
+                        }
+                    });
+        }
+
+        // Remove query parameters
+        if (! transformQueryParametersPolicyConfiguration.isClearAll() &&
+                transformQueryParametersPolicyConfiguration.getRemoveQueryParameters() != null) {
+            transformQueryParametersPolicyConfiguration.getRemoveQueryParameters()
+                    .forEach(queryParameterName -> {
+                        if (queryParameterName != null && ! queryParameterName.trim().isEmpty()) {
+                            request.parameters().remove(queryParameterName);
                         }
                     });
         }
