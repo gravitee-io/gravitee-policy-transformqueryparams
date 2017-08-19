@@ -22,6 +22,8 @@ import io.gravitee.policy.api.PolicyChain;
 import io.gravitee.policy.api.annotations.OnRequest;
 import io.gravitee.policy.transformqueryparams.configuration.TransformQueryParametersPolicyConfiguration;
 
+import java.util.Collections;
+
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
  * @author GraviteeSource Team
@@ -52,7 +54,7 @@ public class TransformQueryParametersPolicy {
                             try {
                                 String extValue = (queryParameter.getValue() != null) ?
                                         executionContext.getTemplateEngine().convert(queryParameter.getValue()) : null;
-                                request.parameters().put(queryParameter.getName(), extValue);
+                                request.parameters().put(queryParameter.getName(), Collections.singletonList(extValue));
                             } catch (Exception ex) {
                                 // Do nothing
                             }
