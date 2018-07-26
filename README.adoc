@@ -5,40 +5,39 @@ image:https://ci.gravitee.io/buildStatus/icon?job=gravitee-io/gravitee-policy-tr
 image:https://badges.gitter.im/Join Chat.svg["Gitter", link="https://gitter.im/gravitee-io/gravitee-io?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
 endif::[]
 
-== Scope
+== Phase
 
+[cols="2*", options="header"]
 |===
-|onRequest |onResponse
+^|onRequest
+^|onResponse
 
-|
-|
+^.^| X
+^.^|
 
 |===
 
 == Description
 
-Todo
+The Transform Query Parameters policy is used to override incoming request HTTP query parameters.
+You can override these HTTP query parameters by:
 
-== Configuration
-
-You can configure the policy with the following options :
-
-|===
-|Property |Required |Description |Type |Default
-
-|Todo
-|Todo
-|Todo
-|Todo
-|_todo_
-
-|===
-
+* Clearing all existing query parameters
+* Adding or updating list of query parameters
+* Removing them individually
 
 [source, json]
 .Sample
 ----
 "transform-queryparams": {
-  "todo": true
+    "addQueryParameters": [
+        {
+            "name": "myParam",
+            "value": "{#request.id}"
+        }
+    ],
+    "removeQueryParameters": [
+        "secretParam"
+    ]
 }
 ----
