@@ -26,6 +26,10 @@ You can override these HTTP query parameters by:
 * Adding or updating list of query parameters
 * Removing them individually
 
+The values of query parameters of the incoming request are accessible via the `{#request.params['query_parameter_name']}` construct. 
+
+The example below shows how to add the ID of the incoming request to the outgoing request.
+
 [source, json]
 .Sample
 ----
