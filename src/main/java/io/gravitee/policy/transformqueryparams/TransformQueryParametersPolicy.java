@@ -30,6 +30,9 @@ import java.util.Collections;
  */
 public class TransformQueryParametersPolicy {
 
+    private static final String WHITESPACE = " ";
+    private static final String ENCODED_WHITESPACE = "%20";
+
     /**
      * Transform headers configuration
      */
@@ -54,7 +57,18 @@ public class TransformQueryParametersPolicy {
                             try {
                                 String extValue = (queryParameter.getValue() != null) ?
                                         executionContext.getTemplateEngine().convert(queryParameter.getValue()) : null;
-                                request.parameters().put(queryParameter.getName(), Collections.singletonList(extValue));
+                                //encode whitespace
+                                String name;
+                                if (queryParameter.getName().contains(WHITESPACE)) {
+                                    name = queryParameter.getName().replaceAll(WHITESPACE, ENCODED_WHITESPACE);
+                                } else {
+                                    name = queryParameter.getName();
+                                }
+
+                                if (extValue.contains(WHITESPACE)) {
+                                    extValue = extValue.replaceAll(WHITESPACE, ENCODED_WHITESPACE);
+                                }
+                                request.parameters().put(name, Collections.singletonList(extValue));
                             } catch (Exception ex) {
                                 // Do nothing
                             }
