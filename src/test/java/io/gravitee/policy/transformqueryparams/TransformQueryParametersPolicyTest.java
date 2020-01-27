@@ -271,4 +271,27 @@ public class TransformQueryParametersPolicyTest {
         assertNotNull(request.parameters().get("existing"));
         assertNull(request.parameters().get("foo"));
     }
+
+    @Test
+    public void shouldAddParamDoubleTime() {
+        List<HttpQueryParameter> parameters = new ArrayList<>();
+        HttpQueryParameter param1 = new HttpQueryParameter();
+        param1.setName("foo");
+        param1.setValue("bar1");
+        parameters.add(param1);
+        HttpQueryParameter param2 = new HttpQueryParameter();
+        param2.setName("foo");
+        param2.setValue("bar2");
+        parameters.add(param2);
+        when(configuration.isClearAll()).thenReturn(false);
+        when(configuration.getAddQueryParameters()).thenReturn(parameters);
+        MultiValueMap requestParams = new LinkedMultiValueMap();
+        when(request.parameters()).thenReturn(requestParams);
+
+        policy.onRequest(request, response, executionContext, policyChain);
+
+        assertNotNull(request.parameters().get("foo"));
+        assertEquals(1, request.parameters().get("foo").size());
+        assertEquals("bar2", request.parameters().get("foo").get(0));
+    }
 }

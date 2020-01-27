@@ -23,6 +23,8 @@ import io.gravitee.policy.api.annotations.OnRequest;
 import io.gravitee.policy.transformqueryparams.configuration.TransformQueryParametersPolicyConfiguration;
 
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
@@ -68,7 +70,9 @@ public class TransformQueryParametersPolicy {
                                 if (extValue.contains(WHITESPACE)) {
                                     extValue = extValue.replaceAll(WHITESPACE, ENCODED_WHITESPACE);
                                 }
-                                request.parameters().put(name, Collections.singletonList(extValue));
+                                List<String> values = new LinkedList<>();
+                                values.add(extValue);
+                                request.parameters().put(name, values);
                             } catch (Exception ex) {
                                 // Do nothing
                             }
