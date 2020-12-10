@@ -1,4 +1,4 @@
-= Transform Query Parameters Policy
+= Transform query parameters policy
 
 ifdef::env-github[]
 image:https://ci.gravitee.io/buildStatus/icon?job=gravitee-io/gravitee-policy-transformqueryparams/master["Build status", link="https://ci.gravitee.io/job/gravitee-io/job/gravitee-policy-transformqueryparams/"]
@@ -19,14 +19,16 @@ endif::[]
 
 == Description
 
-The Transform Query Parameters policy is used to override incoming request HTTP query parameters.
-You can override these HTTP query parameters by:
+You can use the `transformqueryparams` policy to override incoming HTTP request query parameters.
+You can override the HTTP query parameters by:
 
 * Clearing all existing query parameters
-* Adding or updating list of query parameters
-* Removing them individually
+* Adding to or updating the list of query parameters
+* Removing query parameters individually
 
-The values of query parameters of the incoming request are accessible via the `{#request.params['query_parameter_name']}` construct. 
+The query parameter values of the incoming request are accessible via the `{#request.params['query_parameter_name']}` construct.
+
+== Example
 
 The example below shows how to add the ID of the incoming request to the outgoing request.
 
