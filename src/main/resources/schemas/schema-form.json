@@ -28,8 +28,11 @@
             "type" : "string"
           },
           "value" : {
-            "title": "Value",
-            "type" : "string"
+            "title": "Value. Supports EL.",
+            "type" : "string",
+            "x-schema-form": {
+              "expression-language": true
+            }
           }
         },
         "required": [
