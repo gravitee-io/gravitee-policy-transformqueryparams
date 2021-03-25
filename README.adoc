@@ -28,6 +28,10 @@ You can override the HTTP query parameters by:
 
 The query parameter values of the incoming request are accessible via the `{#request.params['query_parameter_name']}` construct.
 
+=== Policy identifier
+
+You can enable or disable the policy with policy identifier `transform-queryparams`.
+
 == Example
 
 The example below shows how to add the ID of the incoming request to the outgoing request.
