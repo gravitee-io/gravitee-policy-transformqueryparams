@@ -21,7 +21,6 @@ import io.gravitee.gateway.api.Response;
 import io.gravitee.policy.api.PolicyChain;
 import io.gravitee.policy.api.annotations.OnRequest;
 import io.gravitee.policy.transformqueryparams.configuration.TransformQueryParametersPolicyConfiguration;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,42 +52,47 @@ public class TransformQueryParametersPolicy {
 
         // Add or update query parameters
         if (transformQueryParametersPolicyConfiguration.getAddQueryParameters() != null) {
-            transformQueryParametersPolicyConfiguration.getAddQueryParameters().forEach(
-                    queryParameter -> {
-                        if (queryParameter.getName() != null && ! queryParameter.getName().trim().isEmpty()) {
-                            try {
-                                String extValue = (queryParameter.getValue() != null) ?
-                                        executionContext.getTemplateEngine().convert(queryParameter.getValue()) : null;
-                                //encode whitespace
-                                String name;
-                                if (queryParameter.getName().contains(WHITESPACE)) {
-                                    name = queryParameter.getName().replaceAll(WHITESPACE, ENCODED_WHITESPACE);
-                                } else {
-                                    name = queryParameter.getName();
-                                }
-
-                                if (extValue.contains(WHITESPACE)) {
-                                    extValue = extValue.replaceAll(WHITESPACE, ENCODED_WHITESPACE);
-                                }
-                                List<String> values = new LinkedList<>();
-                                values.add(extValue);
-                                request.parameters().put(name, values);
-                            } catch (Exception ex) {
-                                // Do nothing
+            transformQueryParametersPolicyConfiguration
+                .getAddQueryParameters()
+                .forEach(queryParameter -> {
+                    if (queryParameter.getName() != null && !queryParameter.getName().trim().isEmpty()) {
+                        try {
+                            String extValue = (queryParameter.getValue() != null)
+                                ? executionContext.getTemplateEngine().convert(queryParameter.getValue())
+                                : null;
+                            //encode whitespace
+                            String name;
+                            if (queryParameter.getName().contains(WHITESPACE)) {
+                                name = queryParameter.getName().replaceAll(WHITESPACE, ENCODED_WHITESPACE);
+                            } else {
+                                name = queryParameter.getName();
                             }
+
+                            if (extValue.contains(WHITESPACE)) {
+                                extValue = extValue.replaceAll(WHITESPACE, ENCODED_WHITESPACE);
+                            }
+                            List<String> values = new LinkedList<>();
+                            values.add(extValue);
+                            request.parameters().put(name, values);
+                        } catch (Exception ex) {
+                            // Do nothing
                         }
-                    });
+                    }
+                });
         }
 
         // Remove query parameters
-        if (! transformQueryParametersPolicyConfiguration.isClearAll() &&
-                transformQueryParametersPolicyConfiguration.getRemoveQueryParameters() != null) {
-            transformQueryParametersPolicyConfiguration.getRemoveQueryParameters()
-                    .forEach(queryParameterName -> {
-                        if (queryParameterName != null && ! queryParameterName.trim().isEmpty()) {
-                            request.parameters().remove(queryParameterName);
-                        }
-                    });
+        if (
+            !transformQueryParametersPolicyConfiguration.isClearAll() &&
+            transformQueryParametersPolicyConfiguration.getRemoveQueryParameters() != null
+        ) {
+            transformQueryParametersPolicyConfiguration
+                .getRemoveQueryParameters()
+                .forEach(queryParameterName -> {
+                    if (queryParameterName != null && !queryParameterName.trim().isEmpty()) {
+                        request.parameters().remove(queryParameterName);
+                    }
+                });
         }
 
         // Apply next policy in chain

@@ -15,6 +15,12 @@
  */
 package io.gravitee.policy.transformqueryparams;
 
+import static org.junit.Assert.*;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
 import io.gravitee.common.util.LinkedMultiValueMap;
 import io.gravitee.common.util.MultiValueMap;
 import io.gravitee.el.TemplateEngine;
@@ -24,20 +30,13 @@ import io.gravitee.gateway.api.Response;
 import io.gravitee.policy.api.PolicyChain;
 import io.gravitee.policy.transformqueryparams.configuration.HttpQueryParameter;
 import io.gravitee.policy.transformqueryparams.configuration.TransformQueryParametersPolicyConfiguration;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com)
@@ -257,7 +256,7 @@ public class TransformQueryParametersPolicyTest {
         parameters.add(param);
         when(configuration.isClearAll()).thenReturn(false);
         when(configuration.getAddQueryParameters()).thenReturn(parameters);
-        
+
         List<String> removeparameters = new ArrayList<>();
         String removeparam = "foo";
         removeparameters.add(removeparam);
