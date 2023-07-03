@@ -1,6 +1,7 @@
 {
-  "type" : "object",
-  "id" : "urn:jsonschema:io:gravitee:policy:transformqueryparams:configuration:TransformQueryParametersPolicyConfiguration",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
   "properties" : {
     "clearAll" : {
       "type" : "boolean",
@@ -20,7 +21,6 @@
       "title": "Add query parameter",
       "items" : {
         "type" : "object",
-        "id" : "urn:jsonschema:io:gravitee:policy:transformqueryparams:configuration:HttpQueryParameter",
         "title": "Query Parameter",
         "properties" : {
           "name" : {
@@ -28,7 +28,7 @@
             "type" : "string"
           },
           "value" : {
-            "title": "Value. Supports EL.",
+            "title": "Value. (Supports EL)",
             "type" : "string",
             "x-schema-form": {
               "expression-language": true
