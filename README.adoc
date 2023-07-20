@@ -30,6 +30,14 @@ You can override the HTTP query parameters by:
 
 The query parameter values of the incoming request are accessible via the `{#request.params['query_parameter_name']}` construct.
 
+== Compatibility with APIM
+
+|===
+| Plugin version | APIM version
+| 1.x            | All supported versions
+|===
+
+
 == Example
 
 The example below shows how to add the ID of the incoming request to the outgoing request.
