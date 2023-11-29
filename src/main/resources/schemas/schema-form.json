@@ -33,6 +33,11 @@
                         "x-schema-form": {
                             "expression-language": true
                         }
+                    },
+                    "appendToExistingArray": {
+                        "title": "Append the value to existing queryParam as an array (i.e. ?key=v1&key=v2&key=v3) ?",
+                        "type": "boolean",
+                        "default": false
                     }
                 },
                 "required": ["name", "value"]
