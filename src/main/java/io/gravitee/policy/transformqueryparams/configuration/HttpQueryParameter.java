@@ -36,6 +36,8 @@ public class HttpQueryParameter {
 
     private String value;
 
+    private boolean appendToExistingArray;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

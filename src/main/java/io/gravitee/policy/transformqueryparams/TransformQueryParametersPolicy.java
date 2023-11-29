@@ -21,6 +21,7 @@ import io.gravitee.gateway.api.Response;
 import io.gravitee.policy.api.PolicyChain;
 import io.gravitee.policy.api.annotations.OnRequest;
 import io.gravitee.policy.transformqueryparams.configuration.TransformQueryParametersPolicyConfiguration;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,7 +72,16 @@ public class TransformQueryParametersPolicy {
                             if (extValue.contains(WHITESPACE)) {
                                 extValue = extValue.replaceAll(WHITESPACE, ENCODED_WHITESPACE);
                             }
-                            List<String> values = new LinkedList<>();
+
+                            List<String> values;
+                            if (queryParameter.isAppendToExistingArray()) {
+                                values = request.parameters().get(name);
+                                if (values == null) {
+                                    values = new LinkedList<>();
+                                }
+                            } else {
+                                values = new LinkedList<>();
+                            }
                             values.add(extValue);
                             request.parameters().put(name, values);
                         } catch (Exception ex) {
