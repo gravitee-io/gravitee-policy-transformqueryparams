@@ -31,6 +31,7 @@ import io.gravitee.policy.api.PolicyChain;
 import io.gravitee.policy.transformqueryparams.configuration.HttpQueryParameter;
 import io.gravitee.policy.transformqueryparams.configuration.TransformQueryParametersPolicyConfiguration;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -190,6 +191,49 @@ public class TransformQueryParametersPolicyTest {
                 List.of(),
                 new LinkedMultiValueMap<>(),
                 new LinkedMultiValueMap<>(Map.of("foo", List.of("bar2"))),
+                false
+            ),
+            Arguments.of(
+                "append param to an array",
+                List.of(
+                    HttpQueryParameter.builder().name("foo").value("bar").build(),
+                    HttpQueryParameter.builder().name("foo").value("bar2").appendToExistingArray(true).build()
+                ),
+                List.of(),
+                new LinkedMultiValueMap<>(),
+                new LinkedMultiValueMap<>(Map.of("foo", List.of("bar", "bar2"))),
+                false
+            ),
+            Arguments.of(
+                "append param to an existing array",
+                List.of(HttpQueryParameter.builder().name("foo").value("bar2").appendToExistingArray(true).build()),
+                List.of(),
+                new LinkedMultiValueMap<>(Map.of("foo", new ArrayList<>(List.of("bar")))),
+                new LinkedMultiValueMap<>(Map.of("foo", List.of("bar", "bar2"))),
+                false
+            ),
+            Arguments.of(
+                "append multiple values into an array",
+                List.of(
+                    HttpQueryParameter.builder().name("foo").value("bar").appendToExistingArray(true).build(),
+                    HttpQueryParameter.builder().name("foo").value("bar2").appendToExistingArray(true).build(),
+                    HttpQueryParameter.builder().name("foo").value("bar3").appendToExistingArray(true).build()
+                ),
+                List.of(),
+                new LinkedMultiValueMap<>(),
+                new LinkedMultiValueMap<>(Map.of("foo", List.of("bar", "bar2", "bar3"))),
+                false
+            ),
+            Arguments.of(
+                "replace an existing param with an array",
+                List.of(
+                    HttpQueryParameter.builder().name("foo").value("bar").appendToExistingArray(false).build(),
+                    HttpQueryParameter.builder().name("foo").value("bar2").appendToExistingArray(true).build(),
+                    HttpQueryParameter.builder().name("foo").value("bar3").appendToExistingArray(true).build()
+                ),
+                List.of(),
+                new LinkedMultiValueMap<>(Map.of("foo", List.of("oldvalue"))),
+                new LinkedMultiValueMap<>(Map.of("foo", List.of("bar", "bar2", "bar3"))),
                 false
             )
         );

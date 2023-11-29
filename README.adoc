@@ -28,22 +28,23 @@ You can override the HTTP query parameters by:
 * Adding to or updating the list of query parameters
 * Removing query parameters individually
 
+You can also append a value to an existing query parameter.
+
 The query parameter values of the incoming request are accessible via the `{#request.params['query_parameter_name']}` construct.
 
 == Compatibility with APIM
 
 |===
-| Plugin version | APIM version
-| 1.x            | All supported versions
+|Plugin version | APIM version
+
+|Up to 1.6.x    | 3.x
+|1.7.x          | 4.0 to latest
 |===
 
 
-== Example
-
-The example below shows how to add the ID of the incoming request to the outgoing request.
-
-[source, json]
-.Sample
+== Examples
+=== Add the ID of the incoming request to the outgoing request
+[source,json]
 ----
 "transform-queryparams": {
     "addQueryParameters": [
@@ -51,9 +52,93 @@ The example below shows how to add the ID of the incoming request to the outgoin
             "name": "myParam",
             "value": "{#request.id}"
         }
-    ],
-    "removeQueryParameters": [
-        "secretParam"
     ]
 }
 ----
+`https://host:port/path?foo=bar` becomes `https://host:port/path?a=b&myParam=my-request-id`
+
+=== Remove existing param and add a new one
+[source, json]
+----
+"transform-queryparams": {
+    "removeQueryParameters": [
+        "foo"
+    ],
+    "addQueryParameters": [
+        {
+            "name": "myParam",
+            "value": "myValue"
+        }
+    ]
+}
+----
+`https://host:port/path?foo=bar&key=value` becomes `https://host:port/path?key=value&myParam=myValue`
+
+=== Remove all existing params and add a new one
+[source, json]
+----
+"transform-queryparams": {
+    "clearAll": true,
+    "addQueryParameters": [
+        {
+            "name": "myParam",
+            "value": "myValue"
+        }
+    ]
+}
+----
+`https://host:port/path?foo=bar&key=value` becomes `https://host:port/path?myParam=myValue`
+
+=== Replace an existing param
+[source, json]
+----
+"transform-queryparams": {
+    "addQueryParameters": [
+        {
+            "name": "myParam",
+            "value": "myNewValue"
+        }
+    ]
+}
+----
+`https://host:port/path?myParam=myValue` becomes `https://host:port/path?myParam=myNewValue`
+
+=== Append multiple values to an existing param
+[source, json]
+----
+"transform-queryparams": {
+    "addQueryParameters": [
+        {
+            "name": "foo",
+            "value": "bar2",
+            "appendToExistingArray": true
+        },
+        {
+            "name": "foo",
+            "value": "bar3",
+            "appendToExistingArray": true
+        }
+    ]
+}
+----
+`https://host:port/path?foo=bar` becomes `https://host:port/path?foo=bar&foo=bar2&foo=bar3`
+
+=== Replace an existing param with an array
+[source, json]
+----
+"transform-queryparams": {
+    "addQueryParameters": [
+        {
+            "name": "foo",
+            "value": "bar2",
+            "appendToExistingArray": false
+        },
+        {
+            "name": "foo",
+            "value": "bar3",
+            "appendToExistingArray": true
+        }
+    ]
+}
+----
+`https://host:port/path?foo=bar` becomes `https://host:port/path?foo=bar2&foo=bar3`
