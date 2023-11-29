@@ -15,10 +15,10 @@
  */
 package io.gravitee.policy.transformqueryparams;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import io.gravitee.common.util.LinkedMultiValueMap;
@@ -30,19 +30,23 @@ import io.gravitee.gateway.api.Response;
 import io.gravitee.policy.api.PolicyChain;
 import io.gravitee.policy.transformqueryparams.configuration.HttpQueryParameter;
 import io.gravitee.policy.transformqueryparams.configuration.TransformQueryParametersPolicyConfiguration;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.Map;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * @author Nicolas GERAUD (nicolas.geraud at graviteesource.com)
  * @author GraviteeSource Team
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TransformQueryParametersPolicyTest {
 
     private TransformQueryParametersPolicy policy;
@@ -65,250 +69,129 @@ public class TransformQueryParametersPolicyTest {
     @Mock
     protected PolicyChain policyChain;
 
-    @Before
+    @BeforeEach
     public void init() {
         initMocks(this);
 
         policy = new TransformQueryParametersPolicy(configuration);
-        when(executionContext.getTemplateEngine()).thenReturn(templateEngine);
-        when(templateEngine.convert(any(String.class))).thenAnswer(returnsFirstArg());
+        lenient().when(executionContext.getTemplateEngine()).thenReturn(templateEngine);
+        lenient().when(templateEngine.convert(any(String.class))).thenAnswer(returnsFirstArg());
     }
 
-    @Test
-    public void shouldAddSimpleParam() {
-        List<HttpQueryParameter> addQueryParameters = new ArrayList<>() {
-            {
-                add(HttpQueryParameter.builder().name("foo").value("bar").build());
-            }
-        };
-        List<String> removeQueryParameters = new ArrayList<>();
-        MultiValueMap<String, String> requestQueryParams = new LinkedMultiValueMap<>();
-        MultiValueMap<String, String> expectedQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("foo", "bar");
-            }
-        };
-
-        shouldTest(requestQueryParams, addQueryParameters, removeQueryParameters, expectedQueryParams, false);
-    }
-
-    @Test
-    public void shouldAddSimpleParamAndKeepExistingParams() {
-        List<HttpQueryParameter> addQueryParameters = new ArrayList<>() {
-            {
-                add(HttpQueryParameter.builder().name("foo").value("bar").build());
-            }
-        };
-        List<String> removeQueryParameters = new ArrayList<>();
-        MultiValueMap<String, String> requestQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("existing", "value");
-            }
-        };
-        MultiValueMap<String, String> expectedQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("existing", "value");
-                add("foo", "bar");
-            }
-        };
-
-        shouldTest(requestQueryParams, addQueryParameters, removeQueryParameters, expectedQueryParams, false);
-    }
-
-    @Test
-    public void shouldAddEncodedParam() {
-        List<HttpQueryParameter> addQueryParameters = new ArrayList<>() {
-            {
-                add(HttpQueryParameter.builder().name("foo%20name").value("bar%20name").build());
-            }
-        };
-        List<String> removeQueryParameters = new ArrayList<>();
-        MultiValueMap<String, String> requestQueryParams = new LinkedMultiValueMap<>();
-        MultiValueMap<String, String> expectedQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("foo%20name", "bar%20name");
-            }
-        };
-
-        shouldTest(requestQueryParams, addQueryParameters, removeQueryParameters, expectedQueryParams, false);
-    }
-
-    @Test
-    public void shouldAddUnencodedParam() {
-        List<HttpQueryParameter> addQueryParameters = new ArrayList<>() {
-            {
-                add(HttpQueryParameter.builder().name("foo&name").value("bar'name&=3").build());
-            }
-        };
-        List<String> removeQueryParameters = new ArrayList<>();
-        MultiValueMap<String, String> requestQueryParams = new LinkedMultiValueMap<>();
-        MultiValueMap<String, String> expectedQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("foo&name", "bar'name&=3");
-            }
-        };
-
-        shouldTest(requestQueryParams, addQueryParameters, removeQueryParameters, expectedQueryParams, false);
-    }
-
-    @Test
-    public void shouldEncodeWhitespaceParam() {
-        List<HttpQueryParameter> addQueryParameters = new ArrayList<>() {
-            {
-                add(HttpQueryParameter.builder().name("foo name").value("bar name").build());
-            }
-        };
-        List<String> removeQueryParameters = new ArrayList<>();
-        MultiValueMap<String, String> requestQueryParams = new LinkedMultiValueMap<>();
-        MultiValueMap<String, String> expectedQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("foo%20name", "bar%20name");
-            }
-        };
-
-        shouldTest(requestQueryParams, addQueryParameters, removeQueryParameters, expectedQueryParams, false);
-    }
-
-    @Test
-    public void shouldClearAll() {
-        List<HttpQueryParameter> addQueryParameters = new ArrayList<>();
-        List<String> removeQueryParameters = new ArrayList<>();
-        MultiValueMap<String, String> requestQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("foo% 20name", "bar%20name");
-            }
-        };
-        MultiValueMap<String, String> expectedQueryParams = new LinkedMultiValueMap<>();
-
-        shouldTest(requestQueryParams, addQueryParameters, removeQueryParameters, expectedQueryParams, true);
-    }
-
-    @Test
-    public void shouldOverride() {
-        List<HttpQueryParameter> addQueryParameters = new ArrayList<>() {
-            {
-                add(HttpQueryParameter.builder().name("foo").value("newbar").build());
-            }
-        };
-        List<String> removeQueryParameters = new ArrayList<>();
-        MultiValueMap<String, String> requestQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("foo", "bar");
-            }
-        };
-        MultiValueMap<String, String> expectedQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("foo", "newbar");
-            }
-        };
-
-        shouldTest(requestQueryParams, addQueryParameters, removeQueryParameters, expectedQueryParams, false);
-    }
-
-    @Test
-    public void shouldRemoveAllAndAdd() {
-        List<HttpQueryParameter> addQueryParameters = new ArrayList<>() {
-            {
-                add(HttpQueryParameter.builder().name("foo").value("bar").build());
-            }
-        };
-        List<String> removeQueryParameters = new ArrayList<>();
-        MultiValueMap<String, String> requestQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("old", "value");
-            }
-        };
-        MultiValueMap<String, String> expectedQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("foo", "bar");
-            }
-        };
-
-        shouldTest(requestQueryParams, addQueryParameters, removeQueryParameters, expectedQueryParams, true);
-    }
-
-    @Test
-    public void shouldRemoveParam() {
-        List<HttpQueryParameter> addQueryParameters = new ArrayList<>();
-        List<String> removeQueryParameters = new ArrayList<>() {
-            {
-                add("foo");
-            }
-        };
-        MultiValueMap<String, String> requestQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("foo", "bar");
-                add("old", "value");
-            }
-        };
-        MultiValueMap<String, String> expectedQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("old", "value");
-            }
-        };
-
-        shouldTest(requestQueryParams, addQueryParameters, removeQueryParameters, expectedQueryParams, false);
-    }
-
-    @Test
-    public void shouldVerifyOrderAddThenRemoveParam() {
-        List<HttpQueryParameter> addQueryParameters = new ArrayList<>() {
-            {
-                add(HttpQueryParameter.builder().name("foo").value("bar").build());
-            }
-        };
-        List<String> removeQueryParameters = new ArrayList<>() {
-            {
-                add("foo");
-            }
-        };
-        MultiValueMap<String, String> requestQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("existing", "value");
-            }
-        };
-        MultiValueMap<String, String> expectedQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("existing", "value");
-            }
-        };
-
-        shouldTest(requestQueryParams, addQueryParameters, removeQueryParameters, expectedQueryParams, false);
-    }
-
-    @Test
-    public void shouldAddParamDoubleTime() {
-        List<HttpQueryParameter> addQueryParameters = new ArrayList<>() {
-            {
-                add(HttpQueryParameter.builder().name("foo").value("bar").build());
-                add(HttpQueryParameter.builder().name("foo").value("bar2").build());
-            }
-        };
-        List<String> removeQueryParameters = new ArrayList<>();
-        MultiValueMap<String, String> requestQueryParams = new LinkedMultiValueMap<>();
-        MultiValueMap<String, String> expectedQueryParams = new LinkedMultiValueMap<>() {
-            {
-                add("foo", "bar2");
-            }
-        };
-
-        shouldTest(requestQueryParams, addQueryParameters, removeQueryParameters, expectedQueryParams, false);
-    }
-
-    private void shouldTest(
-        MultiValueMap<String, String> requestQueryParams,
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("useCases")
+    void shouldTest(
+        String name,
         List<HttpQueryParameter> addQueryParameters,
         List<String> removeQueryParameters,
+        MultiValueMap<String, String> requestQueryParams,
         MultiValueMap<String, String> expectedQueryParams,
         boolean clearAll
     ) {
-        when(configuration.isClearAll()).thenReturn(clearAll);
-        when(configuration.getAddQueryParameters()).thenReturn(addQueryParameters);
-        when(configuration.getRemoveQueryParameters()).thenReturn(removeQueryParameters);
-        when(request.parameters()).thenReturn(requestQueryParams);
+        lenient().when(configuration.isClearAll()).thenReturn(clearAll);
+        lenient().when(configuration.getAddQueryParameters()).thenReturn(addQueryParameters);
+        lenient().when(configuration.getRemoveQueryParameters()).thenReturn(removeQueryParameters);
+        lenient().when(request.parameters()).thenReturn(requestQueryParams);
 
         policy.onRequest(request, response, executionContext, policyChain);
 
         assertEquals(expectedQueryParams, request.parameters());
+    }
+
+    private static Stream<Arguments> useCases() throws IOException {
+        return Stream.of(
+            // name, addQueryParameters, removeQueryParameters, requestQueryParams, expectedQueryParams, clearAll
+            Arguments.of(
+                "add simple param",
+                List.of(HttpQueryParameter.builder().name("foo").value("bar").build()),
+                List.of(),
+                new LinkedMultiValueMap<>(),
+                new LinkedMultiValueMap<>(Map.of("foo", List.of("bar"))),
+                false
+            ),
+            Arguments.of(
+                "add simple param and keep existing params",
+                List.of(HttpQueryParameter.builder().name("foo").value("bar").build()),
+                List.of(),
+                new LinkedMultiValueMap<>(Map.of("existing", List.of("value"))),
+                new LinkedMultiValueMap<>(Map.of("existing", List.of("value"), "foo", List.of("bar"))),
+                false
+            ),
+            Arguments.of(
+                "add encoded param",
+                List.of(HttpQueryParameter.builder().name("foo%20name").value("bar%20name").build()),
+                List.of(),
+                new LinkedMultiValueMap<>(),
+                new LinkedMultiValueMap<>(Map.of("foo%20name", List.of("bar%20name"))),
+                false
+            ),
+            Arguments.of(
+                "add unencoded param",
+                List.of(HttpQueryParameter.builder().name("foo&name").value("bar'name&=3").build()),
+                List.of(),
+                new LinkedMultiValueMap<>(),
+                new LinkedMultiValueMap<>(Map.of("foo&name", List.of("bar'name&=3"))),
+                false
+            ),
+            Arguments.of(
+                "add whitespace param",
+                List.of(HttpQueryParameter.builder().name("foo name").value("bar name").build()),
+                List.of(),
+                new LinkedMultiValueMap<>(),
+                new LinkedMultiValueMap<>(Map.of("foo%20name", List.of("bar%20name"))),
+                false
+            ),
+            Arguments.of(
+                "clear all",
+                List.of(),
+                List.of(),
+                new LinkedMultiValueMap<>(Map.of("foo", List.of("bar"))),
+                new LinkedMultiValueMap<>(),
+                true
+            ),
+            Arguments.of(
+                "remove param",
+                List.of(),
+                List.of("foo"),
+                new LinkedMultiValueMap<>(Map.of("foo", List.of("bar"), "old", List.of("value"))),
+                new LinkedMultiValueMap<>(Map.of("old", List.of("value"))),
+                false
+            ),
+            Arguments.of(
+                "override param",
+                List.of(HttpQueryParameter.builder().name("foo").value("newbar").build()),
+                List.of(),
+                new LinkedMultiValueMap<>(Map.of("foo", List.of("bar"))),
+                new LinkedMultiValueMap<>(Map.of("foo", List.of("newbar"))),
+                false
+            ),
+            Arguments.of(
+                "remove all and add param",
+                List.of(HttpQueryParameter.builder().name("foo").value("bar").build()),
+                List.of(),
+                new LinkedMultiValueMap<>(Map.of("old", List.of("value"))),
+                new LinkedMultiValueMap<>(Map.of("foo", List.of("bar"))),
+                true
+            ),
+            Arguments.of(
+                "verify order add then remove param",
+                List.of(HttpQueryParameter.builder().name("foo").value("bar").build()),
+                List.of("foo"),
+                new LinkedMultiValueMap<>(Map.of("existing", List.of("value"))),
+                new LinkedMultiValueMap<>(Map.of("existing", List.of("value"))),
+                false
+            ),
+            Arguments.of(
+                "add param double time",
+                List.of(
+                    HttpQueryParameter.builder().name("foo").value("bar").build(),
+                    HttpQueryParameter.builder().name("foo").value("bar2").build()
+                ),
+                List.of(),
+                new LinkedMultiValueMap<>(),
+                new LinkedMultiValueMap<>(Map.of("foo", List.of("bar2"))),
+                false
+            )
+        );
     }
 }
