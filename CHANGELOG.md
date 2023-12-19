@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/gravitee-io/gravitee-policy-transformqueryparams/compare/1.8.0...1.9.0) (2023-12-19)
+
+
+### Features
+
+* enable policy on REQUEST phase for message APIs ([5d080cd](https://github.com/gravitee-io/gravitee-policy-transformqueryparams/commit/5d080cd570df79b3373f10d017c485886718f219)), closes [gravitee-io/issues#9430](https://github.com/gravitee-io/issues/issues/9430)
+
 # [1.8.0](https://github.com/gravitee-io/gravitee-policy-transformqueryparams/compare/1.7.1...1.8.0) (2023-12-01)
 
 
