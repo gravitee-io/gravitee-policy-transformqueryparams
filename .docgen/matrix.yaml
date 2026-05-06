@@ -1,0 +1,13 @@
+rows:
+    - data:
+          plugin: "2.x"
+          apim: "4.8.x to latest"
+          java: 21
+    - data:
+          plugin: "1.7.x"
+          apim: "4.0.x to 4.7.x"
+          java: 17
+    - data:
+          plugin: "1.6.x"
+          apim: "3.x"
+      deprecated: true

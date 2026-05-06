@@ -1,0 +1,7 @@
+{
+    "addQueryParameters": [
+        { "name": "added", "value": "addedValue" },
+        { "name": "toUpdate", "value": "updatedValue" }
+    ],
+    "removeQueryParameters": ["toRemove"]
+}
