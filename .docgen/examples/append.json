@@ -1,0 +1,6 @@
+{
+    "addQueryParameters": [
+        { "name": "appended", "value": "value1", "appendToExistingArray": true },
+        { "name": "appended", "value": "value2", "appendToExistingArray": true }
+    ]
+}

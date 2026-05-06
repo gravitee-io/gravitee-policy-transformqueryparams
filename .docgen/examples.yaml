@@ -1,0 +1,20 @@
+genExamples: []
+rawExamples:
+    - title: Add, update and remove query parameters
+      templateRef: v4-api-proxy
+      language: json
+      properties:
+          phase: request
+      file: .docgen/examples/add-update-remove.json
+    - title: Clear all and add a new query parameter
+      templateRef: v4-api-proxy
+      language: json
+      properties:
+          phase: request
+      file: .docgen/examples/clear-all.json
+    - title: Append values to an existing query parameter
+      templateRef: v4-api-proxy
+      language: json
+      properties:
+          phase: request
+      file: .docgen/examples/append.json

@@ -1,0 +1,4 @@
+{
+    "clearAll": true,
+    "addQueryParameters": [{ "name": "added", "value": "addedValue" }]
+}
