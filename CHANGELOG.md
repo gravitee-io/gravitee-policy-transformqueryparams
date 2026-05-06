@@ -1,3 +1,20 @@
+# [2.0.0](https://github.com/gravitee-io/gravitee-policy-transformqueryparams/compare/1.9.0...2.0.0) (2026-05-06)
+
+
+### chore
+
+* **deps::** update gravitee-parent to v23.5.0 ([530c5b4](https://github.com/gravitee-io/gravitee-policy-transformqueryparams/commit/530c5b458c6f2450761e47465c3ceacb6294e4b7))
+
+
+### Features
+
+* enable the policy for LLM_PROXY APIs ([8862a77](https://github.com/gravitee-io/gravitee-policy-transformqueryparams/commit/8862a77e3a3457236eaab988ae3d1575b698e3d6))
+
+
+### BREAKING CHANGES
+
+* **deps::** requires Java 21
+
 # [1.9.0](https://github.com/gravitee-io/gravitee-policy-transformqueryparams/compare/1.8.0...1.9.0) (2023-12-19)
 
 
