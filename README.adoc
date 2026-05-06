@@ -38,7 +38,8 @@ The query parameter values of the incoming request are accessible via the `{#req
 |Plugin version | APIM version
 
 |Up to 1.6.x    | 3.x
-|1.7.x          | 4.0 to latest
+|1.7.x          | 4.0 to 4.7.x
+|2.x            | 4.8 to latest
 |===
 
 
