@@ -30,6 +30,7 @@ The `transform-queryparams` policy can be applied to the following API types and
 
 * `PROXY`
 * `MESSAGE`
+* `LLM PROXY`
 
 ### Supported flow phases:
 
